@@ -17,7 +17,7 @@ and then here is some history for the game? I guess?:
   
   20240607 I just made it into v2.1 and I forget what I add
   
-  20250427 A year is passed and I decide to fix some bug in the previous game (for no reason), and I decide to make this github repository so all of you can freely download all the versions of this NiggerMarket game.
+  20250427 A year is passed and I decide to fix some bug in the previous game (for no reason), and I decide to make this github repository so all of you can freely download all the versions of this NutellaMarket game.
 
 
 good
