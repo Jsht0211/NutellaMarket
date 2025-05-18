@@ -1,5 +1,6 @@
 # NutellaMarket
 
+(by AC)
 Hello there so in fact i think only my friend will see this so I will not 9up that much.
 Basiclly, it is such a great game, and I strongly recommend you to play it during the boring ICT lesson (if it is boring)
 
@@ -21,3 +22,8 @@ and then here is some history for the game? I guess?:
 
 
 good
+
+
+(By Joe)
+
+20250518 I added development branches. Good
