@@ -8,18 +8,23 @@ from time import time
 from random import uniform, choice, randint
 from os import system
 from math import log
+import sys
 
 #the nutella class
 class Nutella:
-    def __init__(self,no,price,efficiency,loyalty):
+    def __init__(self,no,price,efficiency,loyalty,sexuality):
         self.no = no
         self.price = price
         self.efficiency = efficiency
         self.loyalty = loyalty
+        self.sexuality = sexuality
         
 #define clear screen function
 def clearscreen():
-    system('cls')
+    if sys.platform == "win32":
+        system('cls')
+    else:
+        system('clear')
     
 def wait():
     print("Press any key to continue")
@@ -58,13 +63,14 @@ def line():
 
 #show all the nutellas in the list
 def showNutellas(nutellaList: list):
-    print("    No.          Price($)          Working effiency($/sec)          Loyalty(%)")
+    print("    No.          Price($)          Working effiency($/sec)          Loyalty(%)          Sexuality(%)")
     for i in nutellaList:
         a = str(i.no)
         b = addzero(i.price)
         c = addzero(i.efficiency)
         d = addzero(i.loyalty)
-        print(" "*(6-len(a)) + a + " "*(17-len(b)) + b + " "*(26-len(c)) + c + " "*(26-len(d)) + d)
+        e = addzero(i.sexuality)
+        print(f"{a:6} {b:17} {c:26} {d:26} {e:11}")
 
 #define ending lines
 def ending():
@@ -607,19 +613,19 @@ def buy():
             #random price, working effiency for a nutella and add the nutella into the market
             if money <= 2:
                 p = rd(2,5)
-                public.append(Nutella(pubnum,p,(rd(p/20 - p/50, p/20 + p/50))*0.6, rd(40,60)))
+                public.append(Nutella(pubnum,p,(rd(p/20 - p/50, p/20 + p/50))*0.6, rd(40,60),rd(20,80)))
             elif money <= 10:
                 p = rd(2, money*0.95)
-                public.append(Nutella(pubnum,p,(rd(p/20 - p/50, p/20 + p/50))*0.5, rd(40,60)))
+                public.append(Nutella(pubnum,p,(rd(p/20 - p/50, p/20 + p/50))*0.5, rd(40,60),rd(20,80)))
             elif money <= 200:
                 p = rd(money*0.5, money*0.8)
-                public.append(Nutella(pubnum,p,(rd(p/20 - p/50, p/20 + p/50))*0.4, rd(40,60)))
+                public.append(Nutella(pubnum,p,(rd(p/20 - p/50, p/20 + p/50))*0.4, rd(40,60),rd(20,80)))
             elif money <= 500:
                 p = rd(money*0.4, money*0.6)
-                public.append(Nutella(pubnum,p,(rd(p/20 - p/50, p/20 + p/50))*0.3, rd(40,60)))
+                public.append(Nutella(pubnum,p,(rd(p/20 - p/50, p/20 + p/50))*0.3, rd(40,60),rd(20,80)))
             elif money > 500:
                 p = rd(money*0.3, money*0.45)
-                public.append(Nutella(pubnum,p,(rd(p/20 - p/50, p/20 + p/50))*0.25, rd(40,60)))
+                public.append(Nutella(pubnum,p,(rd(p/20 - p/50, p/20 + p/50))*0.25, rd(40,60),rd(20,80)))
         
         while len(public) > 5: #remove some nutella if there are more than 5 nutellass in the market
             public.pop(randint(0,len(public)-1))
