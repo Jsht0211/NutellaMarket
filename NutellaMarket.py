@@ -63,14 +63,36 @@ def line():
 
 #show all the nutellas in the list
 def showNutellas(nutellaList: list):
-    print("    No.          Price($)          Working effiency($/sec)          Loyalty(%)          Sexuality(%)")
+    print("    No.      Price($)      Working effiency($/sec)      Loyalty(%)      Sexuality(%)   ")
     for i in nutellaList:
         a = str(i.no)
         b = addzero(i.price)
         c = addzero(i.efficiency)
         d = addzero(i.loyalty)
         e = addzero(i.sexuality)
-        print(f"{a:6} {b:17} {c:26} {d:26} {e:11}")
+        print(f"{a:^9}{b:^14}{c:^29}{d:^16}{e:^18}")
+
+#get a nutella by no
+def getByNo(no):
+    global private
+
+    for i in private:
+        if i.no == no:
+            return i
+
+    return None
+
+#check if the player owns the nutella
+def isExist(no):
+    global private
+
+    if checkvalid(no) and getByNo(int(no)) != None:
+        return True
+
+    return False
+
+def rdAttr(attr,org,error):
+    return dp(attr*rd(org+error,org-error))
 
 #define ending lines
 def ending():
@@ -235,11 +257,10 @@ def modelist():
     print("You can press " + bold("Enter") + " to refresh the page and update the time you use and money you have now")
     print("0. " + bold("Quit") + " game")
     print("1. " + bold("Buy") + " nutella")
-    print("2. " + bold("Sold") + " nutella")
-    print("3. " + bold("Whip") + " nutella")
-    print("4. " + bold("Reward") + " nutella")
-    print("5. " + bold("Expand") + " cotton field")
-    print("6. " + bold("Check") + " nutella")
+    print("2. " + bold("Sell") + " nutella")
+    print("3. " + bold("Expand") + " cotton field")
+    print("4. " + bold("Check") + " nutella")
+    print("5. " + bold("Manage") + " nutella")
     mode = input() #choose the mode
     if mode == "0":
         quitgame()
@@ -248,13 +269,28 @@ def modelist():
     elif mode == "2":
         sold()
     elif mode == "3":
-        whip()
-    elif mode == "4":
-        reward()
-    elif mode == "5":
         expand()
-    elif mode == "6":
+    elif mode == "4":
         check()
+    elif mode == "5":
+        clearscreen()
+        print("1. " + bold("Whip") + " nutella")
+        print("2. " + bold("Reward") + " nutella")
+        print("3. " + bold("Breed") + " nutella")
+        manage = input()#choose the management
+        
+        if manage == "1":
+            whip()
+        elif manage == "2":
+            reward()
+        elif manage == "3":
+            breed()
+        #check validity
+        elif manage != "":
+           line()
+           print("Input invalid. ")
+           wait()
+
     #check validity
     elif mode != "":
         line()
@@ -638,7 +674,7 @@ def buy():
         print("Aviable nutellas in market")
         print("Enter the number to select which nutella you want do buy")
         print("If you don't want to buy any nutella, or you want to leave the market, press " + bold("Enter"))
-        print("----------------------------------------------------------------------------------")
+        line()
         showNutellas(public)
             
         #buying nutellas
@@ -706,7 +742,7 @@ def sold():
         print("The accumalative working effiency of your nutellas are " + bold(addzero(dp(workspeed))) + " $/sec")
         print("Enter the number to select the nutella you want to sold")
         print("If you don't want to sold any nutella, or you want to leave this page, press " + bold("Enter"))
-        print("----------------------------------------------------------------------------------")
+        line()
         showNutellas(private)
             
         #sold nutella
@@ -798,7 +834,7 @@ def whip():
         print("The accumalative working effiency of your nutellas are " + bold(addzero(dp(workspeed))) + " $/sec")
         print("Enter the number to select the nutella you want to whip")
         print("If you don't want to sold any nutella, or you want to leave this page, press " + bold("Enter"))
-        print("----------------------------------------------------------------------------------")
+        line()
         showNutellas(private)
             
         #whip nutella
@@ -851,7 +887,7 @@ def reward():
         print("The accumalative working effiency of your nutellas are " + bold(addzero(dp(workspeed))) + " $/sec")
         print("Enter the number to select the nutella you want to reward")
         print("If you don't want to sold any nutella, or you want to leave this page, press " + bold("Enter"))
-        print("----------------------------------------------------------------------------------")
+        line()
         showNutellas(private)
         #reward nutella
         while True:
@@ -907,7 +943,7 @@ def expand():
         print("You have " + bold(capacity*100) + "m² of cotton fields")
         print("You use " + bold(addzero(dp(time() - start))) + " seconds now")
         print("The accumalative working effiency of your nutellas are " + bold(addzero(dp(workspeed))) + " $/sec")
-        print("----------------------------------------------------------------------------------")
+        line()
         print("The price for 100m² of land is $" + str(landPrice))
         print("Will you expand your field?")
         print("1." + bold("Yes"))
@@ -944,12 +980,95 @@ def check():
         print("These are the nutella you have now. ")
         print("Note that you can only have", str(capacity) + " nutellas at most")
         print("Press " + bold("Enter") + " to return to the main page")
-        print("----------------------------------------------------------------------------------")
+        line()
         showNutellas(private)
         n = input() 
         if n == "":
             break #go back to mainpage when player enter nothing            
+
+
+
+#breed nutellas
+def breed():
+    global private, money, capacity, pubnum
+
+    if len(private) >= capacity:
+        print("Your land needs expansion to hold more nutellas")
+        wait()
+        return
+
+    while True:
+        clearscreen()
+        gametick()
+
+        print(bold("Your breeding menu"))
+        print("You have " + bold("$" + addzero(money)))
+        print("You have used " + bold(addzero(dp(time() - start))) + " seconds now")
+        print("If you don't want to breed any nutellas, or you want to leave this page, press " + bold("Enter"))
+
+        line()
+        showNutellas(private)
+    
+        dad = input("\nEnter the no. of the father:")
+        if isExist(dad):
+            mom = input("Enter the no. of the mother:")
+            if isExist(mom):
+                dad = getByNo(int(dad))
+                mom = getByNo(int(mom))
+
+                cost = rdAttr(25,1,0.2)
+                sucRate = rdAttr((dad.sexuality+mom.sexuality)/2,1,0.3)
+                print("Cost for breeding is: $" + str(cost))
+                print("Success rate for breeding is: " + str(sucRate) + "%")
+                if input("Enter 1 to continue breeding, else stops breeding:") == "1":
+                    if money >= cost:
+                        money -= cost
+                        if rd(0,100) < sucRate:
+                            #success
+                            #rat for ratio
+                            dadRat = rdAttr(dad.sexuality/(dad.sexuality + mom.sexuality),1,0.1)
+                            momRat = 1 - dadRat
+
+                            pubnum += 1
+                            kid = Nutella(
+                                pubnum,
+                                dad.price*dadRat+mom.price*momRat,
+                                dad.efficiency*dadRat+mom.efficiency*momRat,
+                                #lower loyalty
+                                rdAttr(dad.loyalty*dadRat+mom.loyalty*momRat,0.7,0.15),
+                                dad.sexuality*dadRat+mom.sexuality*momRat
+                            )
+                            line()
+                            print("Breeding succeeded")
+                            print("Kid's attributes:\n")
+                            showNutellas([kid])
+                            private.append(kid)
+                            wait()
+                            break
+
+                        else:
+                            #fails
+                            print("Breeding failed")
+                            wait()
+                    else:
+                        print("Do not have enough money")
+                        wait()
+                else:
+                    break
+            elif mom != "":
+                print("Input invalid")
+                wait()
+            else:
+                break
         
+        elif dad != "":
+            print("Input invalid")
+            wait()
+        else:
+            break
+  
+
+
 CKC_members = ["ac", "jolex", "sidis", "joe", "alvin", "arvin", "carson", "davis", "jacky", "kayden", "aiden", "kevin"]
 clearscreen()
 print("Welcome to the", bold("NutellaMarket")+"!")
