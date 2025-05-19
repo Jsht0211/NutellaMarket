@@ -26,4 +26,6 @@ good
 
 (By Joe)
 
-20250518 I added development branches. Good
+20250518 I added development branches, ended our stone age coding
+
+20250519 I finished breeding system

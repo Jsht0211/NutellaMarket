@@ -1,6 +1,6 @@
 '''
-NutellaMarket v3.0.2
-20250502
+NutellaMarket v3.0.3
+202505019
 Made by AC, Sidis, Joe
 '''
 #import module
@@ -123,7 +123,7 @@ def startpage():
     global private, public, pubnum, money, mode, start, stop, workspeed, timea, timeb, gamemode, capacity
     clearscreen()
     #showing basic information to the player
-    print("Welcome to " + bold("Nutella Market 3.0.2"))
+    print("Welcome to " + bold("Nutella Market 3.0.3"))
     print("Enter " + bold("rule") + " for the rules. ")
     line()
     print("In this game, there are three game modes.")
