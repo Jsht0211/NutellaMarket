@@ -1,6 +1,6 @@
 '''
-NutellaMarket v3.0.3
-202505019
+NutellaMarket v3.1.0
+20250521
 Made by AC, Sidis, Joe
 '''
 #import module
@@ -18,6 +18,8 @@ class Nutella:
         self.efficiency = efficiency
         self.loyalty = loyalty
         self.sexuality = sexuality
+        self.health = 100
+        self.sight = 100
         
 #define clear screen function
 def clearscreen():
@@ -63,14 +65,18 @@ def line():
 
 #show all the nutellas in the list
 def showNutellas(nutellaList: list):
-    print("    No.      Price($)      Working effiency($/sec)      Loyalty(%)      Sexuality(%)   ")
+    gametick()
+    print("Nutella information:\n")
+    print("    No.      Price($)      Working effiency($/sec)      Loyalty(%)      Sexuality(%)      Health(%)      Sight(%)   ")
     for i in nutellaList:
         a = str(i.no)
         b = addzero(i.price)
         c = addzero(i.efficiency)
         d = addzero(i.loyalty)
         e = addzero(i.sexuality)
-        print(f"{a:^9}{b:^14}{c:^29}{d:^16}{e:^18}")
+        f = addzero(i.health)
+        g = addzero(i.sight)
+        print(f"{a:^9}{b:^14}{c:^29}{d:^16}{e:^18}{f:^15}{g:^14}")
 
 #get a nutella by no
 def getByNo(no):
@@ -78,6 +84,15 @@ def getByNo(no):
 
     for i in private:
         if i.no == no:
+            return i
+
+    return None
+
+def getByName(name):
+    global shopItems
+
+    for i in shopItems:
+        if i.name == name:
             return i
 
     return None
@@ -120,10 +135,10 @@ def ending():
 
 #define the starting page of the game
 def startpage():
-    global private, public, pubnum, money, mode, start, stop, workspeed, timea, timeb, gamemode, capacity
+    global private, public, pubnum, money, mode, start, stop, workspeed, timea, timeb, gamemode, capacity, fbiChance, shopItems, storage, blind
     clearscreen()
     #showing basic information to the player
-    print("Welcome to " + bold("Nutella Market 3.0.3"))
+    print("Welcome to " + bold("Nutella Market 3.1.0"))
     print("Enter " + bold("rule") + " for the rules. ")
     line()
     print("In this game, there are three game modes.")
@@ -174,6 +189,15 @@ def startpage():
     timea = 0 #temperory time variable to save
     timeb = 0 #temperory time variable to save
     gamemode = 1 #gamemode
+    shopItems = [
+                    Item("mobile phone",60,["loyalty x 110%","sight - 30%","efficiency x 120%"],0,True),         
+                    Item("cannabis",100,["loyalty x 130%","health - 15%","sexuality - 30%","efficiency x 170%"],10,True),
+                    Item("cult belief",370,["loyalty -> 100%","efficiency x 110%"],70,True)
+                ] #add new items here
+    storage = {"mobile phone": 0, "cannabis": 0, "cult belief": 0}  #items the player owns
+    fbiChance = 0 #chance of being caught when carrying out risky behaviours
+
+    blind = []
     
     #decide operation
     if n == "1":
@@ -216,19 +240,23 @@ def startpage():
         print(bold("v1.0"), "-- 20240314 -- by Joe -- 158 lines of code")
         print("This is the start of everything\n")
         print(bold("v2.0"), "-- 20240605 -- by AC -- 339 lines of code")
-        print("Every code have been rewritten, and this become a real game. ")
+        print("Every code have been rewritten, and this become a real game.\n ")
         print(bold("v2.1"), "-- 20240607 -- by AC -- 431 lines of code")
-        print("Fix some bug and add gamemode 2. ")
+        print("Fix some bug and add gamemode 2. \n")
         print(bold("v2.2"), "-- 20250427 -- by AC -- 470 lines of code")
         print("Fix some bug and add gamemode 3. \n")
         print(bold("v3.0 beta"), "-- 20250501 -- by Sidis -- 736 lines of code")
-        print("A mysterious gamemode...")
+        print("A mysterious gamemode...\n")
         print(bold("v3.0.0"), "-- 20250502 -- by AC -- 930 lines of code")
-        print("Fix some bug and you can now whip or reward the Nutellas. ")
+        print("Fix some bug and you can now whip or reward the Nutellas. \n")
         print(bold("v3.0.1"), "-- 20250502 -- by Joe -- 920 lines of code")
-        print("Reconstruct the data saving system again. ")
+        print("Reconstruct the data saving system again. \n")
         print(bold("v3.0.2"), "-- 20250502 -- by Joe -- 963 lines of code")
         print("You can now expand your cotton farm!\n")
+        print(bold("v3.0.3"), "-- 202505019 -- by Joe -- 1090 lines of code")
+        print("You can now breed new nutellas!\n")
+        print(bold("v3.1.0"), "-- 20250521 -- by Joe -- 1325 lines of code")
+        print("You can now do shopping!\n")
         print("Press any key to go back to the mode selection menu. ")
         input()
         startpage()
@@ -242,7 +270,7 @@ def startpage():
     
 #define the main page of the game
 def modelist():
-    global money, mode, start, workspeed, capacity
+    global money, mode, start, workspeed, capacity, pubnum, fbiChance, storage
     clearscreen()
     #showing basic information to the player
     gametick()
@@ -251,6 +279,7 @@ def modelist():
     print("You have " + bold("$" + addzero(money)))
     print("You have used " + bold(addzero(dp(time() - start))) + " seconds now")
     print("You have " + bold(capacity*100) + "m² of cotton fields")
+    print("Your chance of being arrested by FBI is: " + str(dp(fbiChance)) + "%")
     print("The accumalative working effiency of your nutellas are " + bold(addzero(dp(workspeed))) + " $/sec") #showing effiency
     line()
     print("These are the things you can do, please enter the number to select what you want to do")
@@ -261,6 +290,8 @@ def modelist():
     print("3. " + bold("Expand") + " cotton field")
     print("4. " + bold("Check") + " nutella")
     print("5. " + bold("Manage") + " nutella")
+    print("6. " + bold("Shop"))
+    print("7. " + bold("Storage"))
     mode = input() #choose the mode
     if mode == "0":
         quitgame()
@@ -277,6 +308,7 @@ def modelist():
         print("1. " + bold("Whip") + " nutella")
         print("2. " + bold("Reward") + " nutella")
         print("3. " + bold("Breed") + " nutella")
+        print("4. " + bold("Entertain") + " nutella")
         manage = input()#choose the management
         
         if manage == "1":
@@ -290,7 +322,23 @@ def modelist():
            line()
            print("Input invalid. ")
            wait()
-
+    elif mode == "6":
+        if shop() == 1:
+            ending()
+    elif mode == "7":
+        storing()
+    elif mode == "&&=P&&":
+        line()
+        print(bold("Developer mode enabled"))
+        line()
+        capacity = 10000
+        money = 1000000
+        for i in range(50):
+            pubnum += 1
+            private.append(Nutella(pubnum,105010,99999,90,90))
+        for i in storage:
+            storage[i] += 1000
+        wait()
     #check validity
     elif mode != "":
         line()
@@ -590,7 +638,7 @@ def endpage():
         
 #define function to check game process
 def gametick():
-    global private, money, start, workspeed, timea, timeb, gamemode
+    global private, money, start, workspeed, timea, timeb, gamemode, fbiChance, blind
     if gamemode == 1:
         if money >= 1000:
             endpage()
@@ -610,16 +658,51 @@ def gametick():
     money += (timeb-timea)*workspeed
     for i in private:
         if i.loyalty <= 15:
-            workspeed -= i.efficiency
             print(bold("NEWS!!!"))
             print("nutella " + str(i.no) + " has a loyalty that was too low, so it escape from your farm. ")
             print("Other nutella spetator his escaption, their working effiency and loyalty decrease. ")
             private.remove(i)
             for j in private:
                 j.efficiency *= rd(0.8,0.9)
-                j.efficiency *= rd(0.8,0.9)
+                j.loyalty *= rd(0.8,0.9)
             line()
-            break
+            
+        if i.health <= 0:
+            print(bold("NEWS!!!"))
+            print("nutella " + str(i.no) + " has died because of low health.")
+            print("the loyalties of all the other nutellas decrease")
+
+            private.remove(i)
+            for j in private:
+                j.loyalty *= rd(0.8,0.9)
+            line()
+
+        if i.sexuality <= 0:
+            i.sexuality = 0
+
+        if not i in blind and i.sight <= 0:
+            print(bold("NEWS!!!"))
+            print("nutella " + str(i.no) + " has become blind")
+            print("It's work efficiency will decrease by 90%")
+
+            i.efficiency *= 0.1
+            i.sight = 0
+            blind.append(i)
+            line()
+
+
+        if i.loyalty > 100:
+            i.loyalty = 100
+        if i.sexuality > 100:
+            i.sexuality = 100
+        if i.health > 100:
+            i.health = 100
+        if i.sight > 100:
+            i.sight = 100
+
+    if fbiChance > 100:
+        fbiChance = 100
+
     workspeed = 0
     for i in private:
         workspeed += i.efficiency
@@ -908,8 +991,6 @@ def reward():
                                 if money >= rewardmoney:
                                     print("Reward done. The loyalty of nutella increase. ")
                                     i.loyalty += rd(10,20)
-                                    if i.loyalty >= 100:
-                                        i.loyalty = 100
                                     money -= rewardmoney
                                 else: 
                                     print("You don't have enough money to reward the nutella. ")
@@ -1012,11 +1093,11 @@ def breed():
         dad = input("\nEnter the no. of the father:")
         if isExist(dad):
             mom = input("Enter the no. of the mother:")
-            if isExist(mom):
+            if isExist(mom) and mom != dad:
                 dad = getByNo(int(dad))
                 mom = getByNo(int(mom))
 
-                cost = rdAttr(25,1,0.2)
+                cost = rdAttr((dad.price+mom.price)/2,0.5,0.15)
                 sucRate = rdAttr((dad.sexuality+mom.sexuality)/2,1,0.3)
                 print("Cost for breeding is: $" + str(cost))
                 print("Success rate for breeding is: " + str(sucRate) + "%")
@@ -1067,6 +1148,162 @@ def breed():
         else:
             break
   
+#shop item class
+class Item:
+    def __init__(self,name,price,eff,fbi,ndNut):
+        self.name = name
+        self.price = price
+        self.eff = eff
+        self.fbi = fbi
+        self.ndNut = ndNut
+
+
+#Buy items in the shop
+def shop():
+    global private, money, shopItems, fbiChance, storage
+
+    while True:
+        clearscreen()
+        gametick()
+
+        print(bold("Your shop menu"))
+        print("You have " + bold("$" + addzero(money)))
+        print("You have used " + bold(addzero(dp(time() - start))) + " seconds now")
+        print("Your chance of being arrested by FBI is: " + str(dp(fbiChance)) + "%")
+        print("If you don't want to buy anything, or you want to leave this page, press " + bold("Enter"))
+
+        line()
+        showNutellas(private)
+
+        line()
+        print("Shop items(The items with '" + bold("(RISKY)") + "' may attract FBI to arrest you when you buy the item):\n\n")
+        
+        for i in range(len(shopItems)):
+            item = shopItems[i]
+            itemEff = " ["
+            for j in range(len(item.eff)):
+                itemEff += item.eff[j]
+                if j != len(item.eff) - 1:
+                    itemEff += ", "
+                else:
+                    itemEff += "] "
+
+            itemRisk = "\nChance to be caught by FBI increased by: " + str(item.fbi) + "%"
+            if item.fbi > 0:
+                itemRisk += bold(" (RISKY)")
+
+            print(str(i+1) + ". " + item.name + " $" + str(item.price) + itemEff + itemRisk + "\n")
+
+        line()
+        choice = input("Which item would you like to buy:")
+        if checkvalid(choice):
+            choice = int(choice)
+            if choice > 0 and choice <= len(shopItems):
+                #valid choice
+                item = shopItems[choice-1]
+                if money >= item.price:
+                    money -= item.price
+                    storage[item.name] += 1
+                    fbiChance += item.fbi
+                    if item.fbi > 0 and rd(0,100) < fbiChance:
+                        clearscreen()
+                        line()
+                        print("Oops! You have been caught by the FBI while buying " + item.name + " !" + bold("GAMEOVER"))
+                        line()
+                        wait()
+                        return 1
+
+                    print("Item " + item.name + " bought successfully!")
+                    wait()
+                    break
+                else:
+                    print("Not enough money")
+                    wait()
+
+            else:
+                print("Input out of range,please choose again")
+                wait()
+        elif choice != "":
+            print("Input invalid")
+            wait()
+        else:
+            break
+
+
+#check and use items
+def storing():
+    global private, money, storage
+
+    while True:
+        clearscreen()
+        gametick()
+
+        print(bold("Your storage menu"))
+        print("You have " + bold("$" + addzero(money)))
+        print("You have used " + bold(addzero(dp(time() - start))) + " seconds now")
+        print("If you don't want to use anything, or you want to leave this page, press " + bold("Enter"))
+
+        line()
+        showNutellas(private)
+
+        line()
+        print("Here are all of your items:\n\n")
+
+        for key, value in storage.items():
+            if value > 0:
+                print(key + ": " + str(value) + "\n")
+
+        line()
+        choice = input("Which item do you want to use:")
+        
+        if choice != "":
+            try:
+                choice = choice.lower()
+                itemNum = storage[choice]
+                
+                if itemNum > 0:
+                    if getByName(choice).ndNut:
+                        nut = input("On which nutella do you want to use this item:")
+                        if not isExist(nut):
+                            print("Input invalid")
+                            wait()
+                            continue
+                    #use the item
+                    nut = getByNo(int(nut))
+                    if choice == "mobile phone":
+                        if nut in blind:
+                            print("\nThe nutella is already blind, you cannot use mobile phone on it")
+                            wait()
+                            continue
+                        nut.loyalty *= 1.1
+                        nut.sight -= 30
+                        nut.efficiency *= 1.2
+                    
+                    elif choice == "cannabis":
+                        nut.loyalty *= 1.3
+                        nut.health -= 15
+                        nut.sexuality -= 30
+                        nut.efficiency *= 1.7
+                    elif choice == "cult belief":
+                        nut.loyalty = 100
+                        nut.efficiency *= 1.1
+
+                    storage[choice] -= 1
+
+                    print("\nItem used successfully!")
+                    wait()
+                    break
+
+
+                else:
+                    print("You don't have this item")
+                    wait()
+
+            except:
+                print("Input invalid")
+                wait()
+        else:
+            break
 
 
 CKC_members = ["ac", "jolex", "sidis", "joe", "alvin", "arvin", "carson", "davis", "jacky", "kayden", "aiden", "kevin"]
