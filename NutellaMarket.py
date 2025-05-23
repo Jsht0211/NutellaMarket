@@ -268,6 +268,8 @@ def startpage():
         print("You can now breed new nutellas!\n")
         print(bold("v3.1.0"), "-- 20250521 -- by Joe -- 1325 lines of code")
         print("You can now do shopping!\n")
+        print(bold("v3.2.0"), "-- 20250523 -- by Joe -- 1471 lines of code")
+        print("You can now sell organs of nutellas\n")
         print("Press any key to go back to the mode selection menu. ")
         input()
         startpage()
