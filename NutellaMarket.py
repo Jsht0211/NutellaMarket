@@ -1,6 +1,6 @@
 '''
-NutellaMarket v3.2.0
-20250523
+NutellaMarket v3.3.0
+20250527
 Made by AC, Sidis, Joe
 '''
 #import module
@@ -62,6 +62,13 @@ def checkvalid(choice: str):
         return True
     except:
         return False
+
+def checkvalidfloat(choice: str):
+    try: #test can the input be change to integer
+        float(choice)
+        return True
+    except:
+        return False
         
 #define function to add line segment
 def line():
@@ -112,8 +119,8 @@ def isExist(no):
 
 #check if caught by fbi
 def checkFbi():
-    global fbiChance, caught
-    if rd(0,100) < fbiChance:
+    global fbiChance, caught, briPerc
+    if rd(0,100) < fbiChance*(1-briPerc/100):
         caught = True
 
 
@@ -146,7 +153,7 @@ def ending():
 
 #define the starting page of the game
 def startpage():
-    global private, public, pubnum, money, mode, start, stop, workspeed, timea, timeb, gamemode, capacity, fbiChance, caught, shopItems, storage
+    global private, public, pubnum, money, mode, start, stop, workspeed, timea, timeb, gamemode, capacity, fbiChance, caught, shopItems, storage, briPerc
     clearscreen()
     #showing basic information to the player
     print("Welcome to " + bold("Nutella Market 3.2.0"))
@@ -206,9 +213,12 @@ def startpage():
                     Item("cult belief",370,["loyalty -> 100%","efficiency x 110%"],70,True),
                     Item("indulgences",3000,["chance caught by FBI - 20%"],0,False)
                 ] #add new items here
-    storage = {"mobile phone": 0, "cannabis": 0, "cult belief": 0, "indulgences": 0}  #items the player owns
+    storage = {} #items the player owns
+    for i in shopItems:
+        storage[i.name] = 0
     fbiChance = 0 #chance of being caught when carrying out risky behaviours
     caught = False
+    briPerc = 0 #percentage of bribery
     
     #decide operation
     if n == "1":
@@ -270,6 +280,8 @@ def startpage():
         print("You can now do shopping!\n")
         print(bold("v3.2.0"), "-- 20250523 -- by Joe -- 1471 lines of code")
         print("You can now sell organs of nutellas\n")
+        print(bold("v3.3.0"), "-- 20250527 -- by Joe -- 1552 lines of code")
+        print("You can now bribe the FBI\n")
         print("Press any key to go back to the mode selection menu. ")
         input()
         startpage()
@@ -283,7 +295,7 @@ def startpage():
     
 #define the main page of the game
 def modelist():
-    global money, mode, start, workspeed, capacity, pubnum, fbiChance, storage, caught
+    global money, mode, start, workspeed, capacity, pubnum, fbiChance, storage, caught, briPerc
     if caught:
         clearscreen()
         line()
@@ -300,7 +312,8 @@ def modelist():
         print("You have " + bold("$" + addzero(money)))
         print("You have used " + bold(addzero(dp(time() - start))) + " seconds now")
         print("You have " + bold(capacity*100) + "m² of cotton fields")
-        print("Your chance of being arrested by FBI is: " + str(dp(fbiChance)) + "%")
+        print("Your chance of being arrested by FBI is: " + str(dp(fbiChance)) + "%") 
+        print("The percentage of bribery of the FBI is: " + bold(str(briPerc) + "%"))
         print("The accumalative working effiency of your nutellas are " + bold(addzero(dp(workspeed))) + " $/sec") #showing effiency
         line()
         print("These are the things you can do, please enter the number to select what you want to do")
@@ -313,6 +326,7 @@ def modelist():
         print("5. " + bold("Manage") + " nutella")
         print("6. " + bold("Shop"))
         print("7. " + bold("Storage"))
+        print("8. " + bold("Bribery"))
         mode = input() #choose the mode
         if mode == "0":
             quitgame()
@@ -349,6 +363,8 @@ def modelist():
             shop()
         elif mode == "7":
             storing()
+        elif mode == "8":
+            bribery()
         elif mode == "&&--&&":
             line()
             print(bold("Developer mode enabled"))
@@ -660,7 +676,7 @@ def endpage():
         
 #define function to check game process
 def gametick():
-    global private, money, start, workspeed, timea, timeb, gamemode, fbiChance, blind
+    global private, money, start, workspeed, timea, timeb, gamemode, fbiChance, briPerc
     if gamemode == 1:
         if money >= 1000:
             endpage()
@@ -731,6 +747,8 @@ def gametick():
         fbiChance = 100
     if fbiChance < 0:
         fbiChance = 0
+    if briPerc > 100:
+        briPerc = 100
 
     workspeed = 0
     for i in private:
@@ -1453,6 +1471,69 @@ def organ():
         else:
             break
         
+#Bribe the fbi
+def bribery():
+    global money, briPerc, fbiChance
+
+    while True:
+        clearscreen()
+        gametick()
+
+        print(bold("Your bribery menu"))
+        print("You have " + bold("$" + addzero(money)))
+        print("You have used " + bold(addzero(dp(time() - start))) + " seconds now")
+        print("The percentage of bribery of the FBI is: " + bold(str(briPerc) + "%"))
+        print("If you don't want to bribe the FBI, or you want to leave this page, press " + bold("Enter"))
+        
+        line()
+
+        bri = input("How much money do you want to pay:")
+        if checkvalidfloat(bri) and float(bri) > 0:
+            bri = float(bri)
+            if bri <= money:          
+                sucRate = dp(rdAttr(100-fbiChance,1,0.2)*(bri/(money*0.65)))
+                if sucRate > 100:
+                    sucRate = 100
+                if sucRate < 0.1:
+                    sucRate = 0
+                briRate = rdAttr(bri/10000*100,1,0.12)
+                if briRate > 100:
+                    briRate = 100
+
+                print("The chance of bribing successfully is: " + bold(str(sucRate) + "%"))
+                print("If success,the bribery percentage of the FBI will increase by " + bold(str(briRate) + "%\n"))
+
+                yn = input("Do you want to bribe the FBI(y/n):").lower()
+                if yn == "y":
+                    money -= bri
+                    if rd(0,100) < sucRate:
+                        briPerc += briRate
+                        print("Bribery succeeded")
+
+                    else:
+                        incChance = rdAttr((100-sucRate)/10,1,0.1)
+                        fbiChance = dp(fbiChance + incChance)
+                        print("Bribery failed,chance caught by the FBI increased by " + bold(str(incChance) + "%"))
+
+                    gametick()
+                    print("\nYour current chance caught by the FBI: " + bold(str(fbiChance) + "%"))
+                    print("Your current bribery percentage: " + bold(str(briPerc) + "%\n"))
+                    wait()
+                    break
+                elif yn == "":
+                    break
+
+            else:
+                print("Not enough money")
+                wait()
+
+        elif bri != "":
+            print("Input invalid")
+            wait()
+        else:
+            break
+
+
 
 CKC_members = ["ac", "jolex", "sidis", "joe", "alvin", "arvin", "carson", "davis", "jacky", "kayden", "aiden", "kevin"]
 clearscreen()
