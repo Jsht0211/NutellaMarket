@@ -1320,7 +1320,7 @@ def storing():
                         nut = getByNo(int(nut))
                     #use the item
                     if choice == "mobile phone":
-                        if nut in blind:
+                        if nut.eyeNo <= 0:
                             print("\nThe nutella is already blind, you cannot use mobile phone on it")
                             wait()
                             continue
