@@ -150,7 +150,7 @@ def ending():
         exit()
     else:
         startpage()
-
+#abcdefg
 #define the starting page of the game
 def startpage():
     global private, public, pubnum, money, mode, start, stop, workspeed, timea, timeb, gamemode, capacity, fbiChance, caught, shopItems, storage, briPerc
